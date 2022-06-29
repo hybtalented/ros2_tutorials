@@ -1,0 +1,19 @@
+{
+  "files.associations": {
+    "*.template": "plaintext",
+    "*.json": "json",
+    "*.qs": "javascript",
+    "*.qdoc": "cpp",
+    "*.doc": "cpp",
+    "*.in": "plaintext",
+    "*.html": "html",
+    "*.vuehtml": "vue-html",
+    "chrono": "cpp",
+    "functional": "cpp",
+    "memory": "cpp"
+  },
+  "python.autoComplete.extraPaths": [
+    "/opt/ros/rolling/lib/python3.10/site-packages",
+    "/opt/ros/rolling/local/lib/python3.10/dist-packages"
+  ]
+}
