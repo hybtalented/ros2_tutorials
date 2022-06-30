@@ -8,9 +8,11 @@
     "*.in": "plaintext",
     "*.html": "html",
     "*.vuehtml": "vue-html",
+    "*.conf": "nginx",
     "chrono": "cpp",
     "functional": "cpp",
-    "memory": "cpp"
+    "memory": "cpp",
+    "random": "cpp"
   },
   "python.autoComplete.extraPaths": [
     "/opt/ros/rolling/lib/python3.10/site-packages",
