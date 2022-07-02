@@ -2,7 +2,7 @@
  * @Author Youbiao He hybtalented@163.com
  * @Date 2022-06-29
  * @LastEditors Youbiao He
- * @LastEditTime 2022-06-29
+ * @LastEditTime 2022-07-02
  * @FilePath /src/beginner_tutorials/src/talker.cpp
  * @Description
  *
@@ -26,13 +26,16 @@ int main(int argc, char **argv) {
   rclcpp::Node::SharedPtr node(new rclcpp::Node("talker"));
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher =
       node->create_publisher<std_msgs::msg::String>("chatter", 10);
+  node->declare_parameter("target", "world");
   int count = 0;
   /**
    * 创建一个定时器
    */
   rclcpp::TimerBase::SharedPtr timer = node->create_wall_timer(500ms, [&]() {
     std_msgs::msg::String msg;
-    msg.data = "hello world " + std::to_string(count++);
+    rclcpp::Parameter target = node->get_parameter("target");
+    msg.data =
+        "hello " + target.get_value<std::string>() + std::to_string(count++);
     RCLCPP_INFO(node->get_logger(), "Publishing '%s'", msg.data.c_str());
     /**
      * 发布一个消息, 发布的消息类型必须要与 advertise 创建是指定的模板参数一致.

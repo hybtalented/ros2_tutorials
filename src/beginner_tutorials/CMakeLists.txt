@@ -13,8 +13,11 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+# 引用同一个包内的接口 - 方式一
 find_package(beginner_tutorials REQUIRED)
 
+# 添加运行时的依赖
+ament_export_dependencies(rosidl_default_runtime)
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
@@ -28,7 +31,8 @@ if(BUILD_TESTING)
 endif()
 
 rosidl_generate_interfaces(${PROJECT_NAME} msg/Num.msg srv/AddTwoInts.srv)
-
+# 引用同一个包内的接口 - 方式二
+rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} rosidl_typesupport_cpp)
 add_executable(talker  src/talker.cpp)
 ament_target_dependencies(talker rclcpp std_msgs)
 
@@ -36,10 +40,20 @@ add_executable(listener  src/listener.cpp)
 ament_target_dependencies(listener rclcpp std_msgs)
 
 add_executable(add_two_ints_client src/add_two_ints_client.cpp)
-ament_target_dependencies(add_two_ints_client rclcpp beginner_tutorials)
+ament_target_dependencies(add_two_ints_client rclcpp )
+# 引用同一个包内的接口 - 方式二
+target_link_libraries(add_two_ints_client ${cpp_typesupport_target})
 
 add_executable(add_two_ints_server src/add_two_ints_server.cpp)
-ament_target_dependencies(add_two_ints_server rclcpp beginner_tutorials)
+ament_target_dependencies(add_two_ints_server 
+  rclcpp 
+  # 引用同一个包内的接口 - 方式一
+  beginner_tutorials
+)
 
-install(TARGETS talker listener add_two_ints_server add_two_ints_client DESTINATION lib/${PROJECT_NAME})
+install(TARGETS 
+  talker listener add_two_ints_server add_two_ints_client 
+  DESTINATION lib/${PROJECT_NAME}
+)
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 ament_package()

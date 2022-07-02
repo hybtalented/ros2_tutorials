@@ -12,10 +12,27 @@
     "chrono": "cpp",
     "functional": "cpp",
     "memory": "cpp",
-    "random": "cpp"
+    "random": "cpp",
+    "string": "cpp"
   },
   "python.autoComplete.extraPaths": [
     "/opt/ros/rolling/lib/python3.10/site-packages",
     "/opt/ros/rolling/local/lib/python3.10/dist-packages"
-  ]
+  ],
+  "python.analysis.extraPaths": [
+    "/opt/ros/rolling/lib/python3.10/site-packages",
+    "/opt/ros/rolling/local/lib/python3.10/dist-packages"
+  ],
+  "terminal.integrated.profiles.linux": {
+    "ros": {
+      "id": "ros",
+      "title": "ros终端",
+      "path": "/bin/bash",
+      "args": [
+        "--init-file",
+        "${workspaceFolder}/setup.sh"
+      ]
+    }
+  },
+  "terminal.integrated.defaultProfile.linux": "ros"
 }
