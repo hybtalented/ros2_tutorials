@@ -1,0 +1,42 @@
+
+#ifndef BEGINNER_TUTORIALS_EXPORT_H
+#define BEGINNER_TUTORIALS_EXPORT_H
+
+#ifdef BEGINNER_TUTORIALS_STATIC_DEFINE
+#  define BEGINNER_TUTORIALS_EXPORT
+#  define BEGINNER_TUTORIALS_NO_EXPORT
+#else
+#  ifndef BEGINNER_TUTORIALS_EXPORT
+#    ifdef ROSIDL_TYPESUPPORT_CPP_BUILDING_DLL
+        /* We are building this library */
+#      define BEGINNER_TUTORIALS_EXPORT __attribute__((visibility("default")))
+#    else
+        /* We are using this library */
+#      define BEGINNER_TUTORIALS_EXPORT __attribute__((visibility("default")))
+#    endif
+#  endif
+
+#  ifndef BEGINNER_TUTORIALS_NO_EXPORT
+#    define BEGINNER_TUTORIALS_NO_EXPORT __attribute__((visibility("hidden")))
+#  endif
+#endif
+
+#ifndef BEGINNER_TUTORIALS_DEPRECATED
+#  define BEGINNER_TUTORIALS_DEPRECATED __attribute__ ((__deprecated__))
+#endif
+
+#ifndef BEGINNER_TUTORIALS_DEPRECATED_EXPORT
+#  define BEGINNER_TUTORIALS_DEPRECATED_EXPORT BEGINNER_TUTORIALS_EXPORT BEGINNER_TUTORIALS_DEPRECATED
+#endif
+
+#ifndef BEGINNER_TUTORIALS_DEPRECATED_NO_EXPORT
+#  define BEGINNER_TUTORIALS_DEPRECATED_NO_EXPORT BEGINNER_TUTORIALS_NO_EXPORT BEGINNER_TUTORIALS_DEPRECATED
+#endif
+
+#if 0 /* DEFINE_NO_DEPRECATED */
+#  ifndef BEGINNER_TUTORIALS_NO_DEPRECATED
+#    define BEGINNER_TUTORIALS_NO_DEPRECATED
+#  endif
+#endif
+
+#endif /* BEGINNER_TUTORIALS_EXPORT_H */

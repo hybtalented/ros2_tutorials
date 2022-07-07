@@ -11,10 +11,13 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 # 引用同一个包内的接口 - 方式一
 find_package(beginner_tutorials REQUIRED)
+include(GenerateExportHeader)
 
 # 添加运行时的依赖
 ament_export_dependencies(rosidl_default_runtime)
@@ -29,8 +32,10 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-
-rosidl_generate_interfaces(${PROJECT_NAME} msg/Num.msg srv/AddTwoInts.srv)
+set(ros_msgs msg/Num.msg)
+set(ros_srvs srv/AddTwoInts.srv)
+set(ros_actions action/Fibonacci.action)
+rosidl_generate_interfaces(${PROJECT_NAME} ${ros_msgs} ${ros_srvs} ${ros_actions})
 # 引用同一个包内的接口 - 方式二
 rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} rosidl_typesupport_cpp)
 add_executable(talker  src/talker.cpp)
@@ -51,9 +56,31 @@ ament_target_dependencies(add_two_ints_server
   beginner_tutorials
 )
 
+
+generate_export_header(${cpp_typesupport_target}
+    BASE_NAME ${PROJECT_NAME}
+    EXPORT_FILE_NAME ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/visibility_control.h
+)
+
+add_library(action_server src/action_server.cpp)
+ament_target_dependencies(action_server rclcpp rclcpp_action rclcpp_components)
+target_link_libraries(action_server ${cpp_typesupport_target})
+target_include_directories(action_server PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+rclcpp_components_register_node(action_server PLUGIN FibonacciActionServer EXECUTABLE fibonacci_action_server)
+
+
+add_library(action_client src/action_client.cpp)
+ament_target_dependencies(action_client rclcpp rclcpp_action rclcpp_components)
+target_link_libraries(action_client ${cpp_typesupport_target})
+target_include_directories(action_client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+rclcpp_components_register_node(action_client PLUGIN FibonacciActionClient EXECUTABLE fibonacci_action_client)
+
 install(TARGETS 
-  talker listener add_two_ints_server add_two_ints_client 
-  DESTINATION lib/${PROJECT_NAME}
+  talker listener add_two_ints_server add_two_ints_client
+  action_server action_client
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 ament_package()
