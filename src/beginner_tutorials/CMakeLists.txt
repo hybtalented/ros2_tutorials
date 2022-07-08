@@ -56,24 +56,35 @@ ament_target_dependencies(add_two_ints_server
   beginner_tutorials
 )
 
-
+# 自动生存
 generate_export_header(${cpp_typesupport_target}
     BASE_NAME ${PROJECT_NAME}
-    EXPORT_FILE_NAME ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/visibility_control.h
+    EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/visibility_control.h
 )
 
-add_library(action_server src/action_server.cpp)
+add_library(action_server SHARED src/action_server.cpp)
 ament_target_dependencies(action_server rclcpp rclcpp_action rclcpp_components)
+target_compile_definitions(action_server PRIVATE ROSIDL_TYPESUPPORT_CPP_BUILDING_DLL)
 target_link_libraries(action_server ${cpp_typesupport_target})
-target_include_directories(action_server PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(action_server PUBLIC 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> 
+  $<INSTALL_INTERFACE:include>
+)
 rclcpp_components_register_node(action_server PLUGIN FibonacciActionServer EXECUTABLE fibonacci_action_server)
 
-
-add_library(action_client src/action_client.cpp)
+add_library(action_client SHARED src/action_client.cpp)
 ament_target_dependencies(action_client rclcpp rclcpp_action rclcpp_components)
+target_include_directories(action_client PUBLIC 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> 
+  $<INSTALL_INTERFACE:include>
+)
+target_compile_definitions(action_client PRIVATE ROSIDL_TYPESUPPORT_CPP_BUILDING_DLL)
 target_link_libraries(action_client ${cpp_typesupport_target})
-target_include_directories(action_client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-rclcpp_components_register_node(action_client PLUGIN FibonacciActionClient EXECUTABLE fibonacci_action_client)
+# 向ROS注册组件
+rclcpp_components_register_node(action_client 
+  PLUGIN FibonacciActionClient 
+  # 创建对应的可执行文件，可以通过 ros2 run 运行
+  EXECUTABLE fibonacci_action_client)
 
 install(TARGETS 
   talker listener add_two_ints_server add_two_ints_client
@@ -82,5 +93,8 @@ install(TARGETS
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
+  DESTINATION include/${PROJECT_NAME})
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 ament_package()
