@@ -64,12 +64,16 @@ generate_export_header(${cpp_typesupport_target}
 
 add_library(action_server SHARED src/action_server.cpp)
 ament_target_dependencies(action_server rclcpp rclcpp_action rclcpp_components)
+# 添加 ROSIDL_TYPESUPPORT_CPP_BUILDING_DLL 宏控制动态库接口可见性
 target_compile_definitions(action_server PRIVATE ROSIDL_TYPESUPPORT_CPP_BUILDING_DLL)
+# 添加本包内的相关接口引用
 target_link_libraries(action_server ${cpp_typesupport_target})
 target_include_directories(action_server PUBLIC 
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> 
   $<INSTALL_INTERFACE:include>
 )
+# 注册组件方式的节点，PLUGIN 后指定节点的名词， 如果还指定了 EXECUTABLE，同时将会生成一个可执行程序，
+# 从而节点也可以通过 ros2 run 的方式启动
 rclcpp_components_register_node(action_server PLUGIN FibonacciActionServer EXECUTABLE fibonacci_action_server)
 
 add_library(action_client SHARED src/action_client.cpp)
