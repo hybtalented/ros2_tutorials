@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
 project(beginner_tutorials)
-
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
@@ -15,8 +14,6 @@ find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
-# 引用同一个包内的接口 - 方式一
-find_package(beginner_tutorials REQUIRED)
 include(GenerateExportHeader)
 
 # 添加运行时的依赖
@@ -45,17 +42,15 @@ add_executable(listener  src/listener.cpp)
 ament_target_dependencies(listener rclcpp std_msgs)
 
 add_executable(add_two_ints_client src/add_two_ints_client.cpp)
-ament_target_dependencies(add_two_ints_client rclcpp )
+ament_target_dependencies(add_two_ints_client rclcpp)
 # 引用同一个包内的接口 - 方式二
 target_link_libraries(add_two_ints_client ${cpp_typesupport_target})
 
 add_executable(add_two_ints_server src/add_two_ints_server.cpp)
 ament_target_dependencies(add_two_ints_server 
   rclcpp 
-  # 引用同一个包内的接口 - 方式一
-  beginner_tutorials
 )
-
+target_link_libraries(add_two_ints_server ${cpp_typesupport_target})
 # 自动生存
 generate_export_header(${cpp_typesupport_target}
     BASE_NAME ${PROJECT_NAME}
@@ -93,12 +88,10 @@ rclcpp_components_register_node(action_client
 install(TARGETS 
   talker listener add_two_ints_server add_two_ints_client
   action_server action_client
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
-  DESTINATION include/${PROJECT_NAME})
+  DESTINATION include)
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 ament_package()

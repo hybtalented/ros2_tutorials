@@ -2,7 +2,7 @@
  * @Author Youbiao He hybtalented@163.com
  * @Date 2022-07-07
  * @LastEditors Youbiao He
- * @LastEditTime 2022-08-16
+ * @LastEditTime 2022-10-26
  * @FilePath /src/beginner_tutorials/src/action_client.cpp
  * @Description
  *
@@ -92,7 +92,7 @@ private:
     } else {
       RCLCPP_INFO(get_logger(),
                   "Goal accepted by the server, wait for result ...");
-    }东
+    }
   }
   /**
    * 动作执行返回回调函数
